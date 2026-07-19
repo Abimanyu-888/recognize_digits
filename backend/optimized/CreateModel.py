@@ -1,5 +1,5 @@
-import load_data as load_data
-import network2 as network2
+import backend.optimized.load_data as load_data
+import backend.optimized.network2 as network2
 
 train_data = load_data.load_kaggle_mnist("../data/mnist_train.csv")
 test_data  = load_data.load_kaggle_mnist("../data/mnist_test.csv")

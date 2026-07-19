@@ -1,4 +1,4 @@
-import Parameters from './Parameters/Parameters';
+import Model_info from './Model_info/Model_info';
 import Result from './Result/Result';
 
 function Workspace({ panels, onRemovePanel }) {
@@ -22,7 +22,7 @@ function Workspace({ panels, onRemovePanel }) {
                             )}
                         </div>
                         <div className="panel-body">
-                            <Parameters panelId={id} />
+                            <Model_info panelId={id} />
                             <Result />
                         </div>
                     </div>

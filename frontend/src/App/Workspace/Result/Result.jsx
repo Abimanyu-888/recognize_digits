@@ -14,11 +14,11 @@ function Result() {
             </div>
             <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
                 <div className="bg-gray-800 p-2 rounded border border-gray-700">
-                    <span className="text-gray-400 text-xs uppercase">Final Val Acc</span>
+                    <span className="text-gray-400 text-xs uppercase">Accuracy on TEST Data</span>
                     <div className="font-semibold text-gray-100">--%</div>
                 </div>
                 <div className="bg-gray-800 p-2 rounded border border-gray-700">
-                    <span className="text-gray-400 text-xs uppercase">Final Val Loss</span>
+                    <span className="text-gray-400 text-xs uppercase">Loss value on TEST Data</span>
                     <div className="font-semibold text-gray-100">--</div>
                 </div>
             </div>
