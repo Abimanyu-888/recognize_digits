@@ -4,7 +4,7 @@ import Workspace from './Workspace/Workspace';
 
 function App() {
     const [panels, setPanels] = useState([1]);
-    const maxPanels = 4;
+    const maxPanels = 2;
 
     const addPanel = () => {
         if (panels.length < maxPanels) {
