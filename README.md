@@ -2,6 +2,8 @@
 
 An interactive web application and Python deep learning framework designed to build, train, and visualize neural networks from scratch on the MNIST dataset using **NumPy**, **FastAPI**, and **React**.
 
+🔗 **Live Demo:** [mnist-model-trainer.vercel.app](https://mnist-model-trainer.vercel.app/)
+
 ---
 
 ## 🚀 Features
