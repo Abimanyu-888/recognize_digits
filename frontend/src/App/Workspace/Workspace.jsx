@@ -12,7 +12,7 @@ function Workspace({ panels, onRemovePanel }) {
         }));
 
         try {
-            const response = await fetch(`https://mnist-model-trainer.onrender.com/api/results/${modelType}`, {
+            const response = await fetch(`https://peaceful-learning-production-3ce6.up.railway.app/api/results/${modelType}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(parameters),
