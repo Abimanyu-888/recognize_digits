@@ -7,6 +7,9 @@ from threading import Lock
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+import zipfile
+with zipfile.ZipFile("./Model/data/mnist_train.csv.zip", "r") as zip_ref:
+    zip_ref.extractall("./Model/data/")
 
 from Model.load_data import load_kaggle_mnist
 from Model.Basic.network import network as BasicNetwork
