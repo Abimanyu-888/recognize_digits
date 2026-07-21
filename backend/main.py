@@ -1,4 +1,5 @@
 from __future__ import annotations
+import traceback
 
 from functools import lru_cache
 from pathlib import Path
@@ -53,14 +54,18 @@ def test():
 
 @app.post("/api/results/basic")
 def train_basic(request: dict):
-    validate_structure(request["structure"])
-    with training_lock:
-        network = BasicNetwork(request["structure"])
-        history = network.train(training_data(), request["batch_size"], request["epochs"], request["learning_rate"])
-        test_loss, test_accuracy = network.evaluate(test_data())
+    try:
+        validate_structure(request["structure"])
+        with training_lock:
+            network = BasicNetwork(request["structure"])
+            history = network.train(training_data(), request["batch_size"], request["epochs"], request["learning_rate"])
+            test_loss, test_accuracy = network.evaluate(test_data())
 
-    result = make_result("basic",request,history,test_loss,test_accuracy)
-    return result
+        result = make_result("basic",request,history,test_loss,test_accuracy)
+        return result
+    except Exception:
+        traceback.print_exc()
+        raise
 
 
 @app.post("/api/results/advanced")
