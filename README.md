@@ -1,113 +1,143 @@
-# 🧠 Recognize Digits: Neural Network from Scratch
+# 🧠 MNIST Model Trainer
 
-A lightweight Python implementation of a fully connected neural network designed for digit recognition, built using NumPy and focused on deep learning fundamentals.
+An interactive web application and Python deep learning framework designed to build, train, and visualize neural networks from scratch on the MNIST dataset using **NumPy**, **FastAPI**, and **React**.
 
 ---
 
 ## 🚀 Features
 
+### 💻 Interactive Web Dashboard
+- Built with **React** and **Vite**, styled with modern CSS.
+- Real-time visualization of training/validation loss and accuracy curves powered by **Chart.js**.
+- Support for adding multiple panel configurations to compare different network hyper-parameters side by side.
+
 ### 🔧 Modular Architectures
-Supports flexible network structures defined by simple list inputs.
+- **Basic Neural Network**: Fully connected neural network built using pure NumPy with standard Gaussian weight initialization and Quadratic cost.
+- **Advanced Neural Network**: Implements normalized weight initialization, Cross-Entropy cost, and L1/L2 regularization for faster convergence and higher accuracy.
 
-### ⚡ Optimization Techniques
-Includes mini-batch gradient descent to accelerate training.
+---
 
-### 📉 Cost Functions
-Implements both:
-- Quadratic Cost
-- Cross-Entropy Cost  
+## ⚡ Basic vs. Advanced Model Comparison
 
-Addresses the **learning slowdown problem** effectively.
+| Feature / Technique | 🔴 Basic Model | 🟢 Advanced Model | Why Advanced is Better |
+| :--- | :--- | :--- | :--- |
+| **Weight Initialization** | Standard Gaussian (`np.random.randn(x, y)`) | Normalized Gaussian (`np.random.randn(x, y) / sqrt(y)`) | **Prevents Neuron Saturation**: Standard initialization creates large initial $z$-values ($\text{Var}(z) \approx n_{\text{in}}$), pushing Sigmoid output into flat saturation regions ($\sigma'(z) \approx 0$). Normalized initialization keeps $z$-variance near $1.0$, preventing early learning stalls. |
+| **Cost Function** | Quadratic Cost ($\frac{1}{2}(y - a)^2$) | Cross-Entropy Cost (Default) or Quadratic Cost | **Eliminates Learning Slowdown**: Under Quadratic Cost, output layer gradients depend on $\sigma'(z)$. If a neuron makes a confident wrong prediction, $\sigma'(z) \to 0$ and learning stalls. Cross-Entropy output delta is simply $(a - y)$, driving rapid learning when errors are high. |
+| **Overfitting Prevention** | None ($\lambda = 0$) | Built-in L1 & L2 Regularization | **Better Generalization**: L1 ($\text{sign}(w)$) and L2 ($w$) weight decay prevent weight explosion, force the network to rely on robust feature representations, and improve accuracy on unseen test data. |
+| **Hyperparameter Control** | Fixed structure & learning rate | Configurable loss function, regularization type, and $\lambda$ strength | **Flexible Experimentation**: Allows fine-tuning network behavior directly from the interactive frontend dashboard. |
 
-### 🛡️ Regularization
-Built-in support for:
-- L1 Regularization  
-- L2 Regularization  
+---
 
-Helps prevent overfitting.
+### ⚡ Optimization & Loss Functions
+- **Mini-Batch Gradient Descent**: Accelerates training convergence.
+- **Cost Functions**:
+  - Quadratic Cost
+  - Cross-Entropy Cost (prevents learning slowdown during early training)
 
-### 📊 Visualization
-Integrated Matplotlib support for:
-- Training accuracy
-- Evaluation accuracy  
-across epochs.
+### 🛡️ Regularization & Weight Initialization
+- **L1 & L2 Regularization**: Built-in support to prevent overfitting.
+- **Normalized Weight Initialization**: Scales initial weights by $\frac{1}{\sqrt{n_{in}}}$ to avoid neuron saturation and stabilize training.
+
+---
+
+## 📁 Repository Structure
+
+```
+mnist_model_trainer/
+├── backend/
+│   ├── Model/
+│   │   ├── Basic/         # FCNN implementation (Quadratic Cost)
+│   │   ├── Advanced/      # FCNN implementation (Cross-Entropy & Regularization)
+│   │   ├── CNN/           # Convolutional Neural Network module
+│   │   └── data/          # MNIST training & test datasets
+│   ├── helper.py          # Validation & payload formatting utilities
+│   ├── main.py            # FastAPI REST server & endpoint routing
+│   └── requirements.txt   # Backend Python dependencies
+├── frontend/
+│   ├── src/               # React components, dashboard UI & charts
+│   ├── index.html         # Application HTML entry point
+│   └── package.json       # Frontend package setup & dependencies
+└── README.md              # Project documentation
+```
 
 ---
 
 ## 📐 Mathematical Foundations
 
-The network is built on core deep learning principles:
+The core deep learning algorithms are written from scratch without external ML frameworks:
 
-- **Activation Function:** Sigmoid (introduces non-linearity)
-- **Backpropagation:** Gradient computation using the chain rule across layers
-- **Weight Initialization:**  
-  Normalized initialization:
-  
+- **Activation Function:** Sigmoid ($\sigma(z) = \frac{1}{1 + e^{-z}}$)
+- **Backpropagation:** Exact gradient computation derived via chain rule across all network layers.
+- **Weight Initialization:** Standard deviation scaled by:
   \[
-  \frac{1}{\sqrt{n_{in}}}
+  \sigma = \frac{1}{\sqrt{n_{\text{in}}}}
   \]
-
-  Helps prevent neuron saturation and stabilizes training.
-
----
-
-## 📌 Current Status
-
-- ✅ Fully Connected Neural Network implemented  
-- 🔄 Future Work:
-  - Convolutional Neural Network (CNN)
-  - Improved spatial feature extraction for image data
+- **Regularized Cost Functions:**
+  - **L2 Regularization Cost:** 
+    \[
+    C = C_0 + \frac{\lambda}{2n} \sum_w w^2
+    \]
+  - **L1 Regularization Cost:** 
+    \[
+    C = C_0 + \frac{\lambda}{n} \sum_w |w|
+    \]
 
 ---
 
-## 🛠️ Usage
+## 🛠️ Getting Started
 
-### Run the application
+### Prerequisites
+- **Python**: 3.9+
+- **Node.js**: 18+ and `npm`
 
-Start the API from `backend/` after installing its requirements:
+### 1. Start the Backend API
+
+Navigate to the `backend/` directory, install requirements, and run the FastAPI server using Uvicorn:
 
 ```bash
+cd backend
 python -m pip install -r requirements.txt
 uvicorn main:app --reload
 ```
+The backend API will start at `http://127.0.0.1:8000`.
 
-In another terminal, start the frontend from `frontend/`:
+### 2. Start the Frontend Application
+
+In a separate terminal, navigate to the `frontend/` directory, install dependencies, and launch the dev server:
 
 ```bash
+cd frontend
 npm install
 npm run dev
 ```
+Open your browser at `http://localhost:5173` to access the interactive MNIST Model Trainer dashboard.
 
-Choose either **Basic** or **Advanced**, adjust the settings, and select **Train Model**. The frontend sends the selected configuration to the API and displays the training/validation-accuracy chart plus final test accuracy and loss.
+---
 
-### Results API
+## 🔗 API Endpoints
 
-- `POST /api/results/basic` trains the basic model and returns its history and test metrics.
-- `POST /api/results/advanced` trains the advanced model, including the selected loss function and regularization, and returns its history and test metrics.
-- `GET /api/results/basic` and `GET /api/results/advanced` return the most recently completed result for that model type.
+- `GET /` - Health check returning server status.
+- `POST /api/results/basic` - Trains the basic model and returns training history and evaluation metrics.
+- `POST /api/results/advanced` - Trains the advanced model with specified loss function and regularization settings.
 
-Example Basic request body:
+### Example Request Body (`POST /api/results/advanced`):
 
 ```json
 {
+  "structure": [784, 128, 10],
   "learning_rate": 0.001,
   "epochs": 10,
   "batch_size": 64,
-  "structure": [784, 128, 10]
+  "loss_function": "cross-entropy",
+  "regularization": "l2",
+  "regularization_strength": 0.1
 }
 ```
 
-To train the model, initialize the network with your desired architecture and call the `train` method:
+---
 
-```python
-# Example: 784 inputs, 30 hidden neurons, 10 outputs
-net = network([784, 30, 10], cost=cross_entropy)
+## 📌 Current Status & Future Roadmap
 
-net.train(
-    train_data,
-    batch_size=10,
-    epoch=30,
-    eta=0.5,
-    evaluation_data=test_data,
-    moniter=True
-)
+- ✅ **Fully Connected Neural Network (Basic & Advanced)** implemented from scratch using NumPy.
+- ✅ **Interactive React Web Interface** for dynamic model training and visualization.
+- 🔄 **Convolutional Neural Network (CNN)** integration for spatial feature extraction on image datasets.
