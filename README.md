@@ -62,6 +62,41 @@ The network is built on core deep learning principles:
 
 ## 🛠️ Usage
 
+### Run the application
+
+Start the API from `backend/` after installing its requirements:
+
+```bash
+python -m pip install -r requirements.txt
+uvicorn main:app --reload
+```
+
+In another terminal, start the frontend from `frontend/`:
+
+```bash
+npm install
+npm run dev
+```
+
+Choose either **Basic** or **Advanced**, adjust the settings, and select **Train Model**. The frontend sends the selected configuration to the API and displays the training/validation-accuracy chart plus final test accuracy and loss.
+
+### Results API
+
+- `POST /api/results/basic` trains the basic model and returns its history and test metrics.
+- `POST /api/results/advanced` trains the advanced model, including the selected loss function and regularization, and returns its history and test metrics.
+- `GET /api/results/basic` and `GET /api/results/advanced` return the most recently completed result for that model type.
+
+Example Basic request body:
+
+```json
+{
+  "learning_rate": 0.001,
+  "epochs": 10,
+  "batch_size": 64,
+  "structure": [784, 128, 10]
+}
+```
+
 To train the model, initialize the network with your desired architecture and call the `train` method:
 
 ```python

@@ -1,6 +1,6 @@
-backend/data
+backend/Model/data
 
-data.zip
+backend/data.zip
 
 frontend/.vite/deps
 frontend/node_modules

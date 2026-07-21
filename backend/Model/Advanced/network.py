@@ -1,7 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import json
-
 
 def sigmoid(z):
     return 1.0/(1.0+np.exp(-z))
@@ -47,28 +44,43 @@ class network():
         self.weights=[np.random.randn(x,y)/np.sqrt(y) for x,y in zip(structure[1:],structure[:-1])]
 
 
-    def train(self,train_data,batch_size,epoch,eta,lamda=0.0,evaluation_data=None,moniter=False):
+    def train(self,train_data,batch_size,epoch,eta,lamda=0.0):
+        n = train_data[0].shape[0]
+        perm = np.random.permutation(n)
 
-        evaluation_acc=[]
-        train_acc=[]
-        n=train_data[0].shape[0]
+        X = train_data[0][perm]
+        y = train_data[1][perm]
+
+        split_idx = int(0.9 * n)
+        train_set = (X[:split_idx], y[:split_idx])
+        evaluation_data = (X[split_idx:], y[split_idx:])
+
+        history = {
+            "epoch": list(range(0, epoch + 1)),
+            "train_loss": [0],
+            "train_acc": [0],
+            "eval_loss": [0],
+            "eval_acc": [0]
+        }
+        n_train = train_set[0].shape[0]
         for i in range(epoch):
-            perm=np.random.permutation(n)
-            train_data = (train_data[0][perm], train_data[1][perm])
+            perm = np.random.permutation(n_train)
+            X_train = train_set[0][perm]
+            y_train = train_set[1][perm]
            
-            mini_batches=[train_data[0][x:x+batch_size] for x in range(0,n,batch_size)]
-            mini_label=[train_data[1][x:x+batch_size] for x in range(0,n,batch_size)]
-            for x,y in zip(mini_batches,mini_label):
-                self.back_prop(x,y,eta,lamda,n)
-            if moniter:
-                evaluation_acc.append(self.evaluate(evaluation_data))
-                train_acc.append(self.evaluate(train_data))
-        if(moniter):
-            x=range(1,epoch+1)
-            plt.plot(x,evaluation_acc,label="evaluation_acc")
-            plt.plot(x,train_acc,label="train_acc")
-            plt.legend()
-            plt.show()
+            for start in range(0, n_train, batch_size):
+                x_batch = X_train[start:start + batch_size]
+                y_batch = y_train[start:start + batch_size]
+                self.back_prop(x_batch, y_batch, eta, lamda, n_train)
+            train_loss, train_acc = self.evaluate((X_train, y_train))
+            eval_loss, eval_acc = self.evaluate(evaluation_data)
+            history["train_loss"].append(train_loss)
+            history["train_acc"].append(train_acc)
+            history["eval_loss"].append(eval_loss)
+            history["eval_acc"].append(eval_acc)
+        return history
+            
+            
 
 
     def back_prop(self,inputs,outputs,eta,lamda,train_size):
@@ -102,25 +114,12 @@ class network():
     
     def evaluate(self,test_data):
          
-        test_result=self.forwardPass(test_data[0].transpose())[-1].transpose()
-        return sum(int(np.argmax(x)==np.argmax(y)) for x,y in zip(test_result,test_data[1]))/test_data[0].shape[0]*100
+        X_data, y_data = test_data
+        n_samples = X_data.shape[0]
+        final_activations = self.forwardPass(X_data.transpose())[-1].transpose()
+        loss = self.cost.cost(final_activations, y_data) / n_samples
+        accuracy = sum(int(np.argmax(x) == np.argmax(y)) for x, y in zip(final_activations, y_data)) / n_samples * 100
+        return float(loss), float(accuracy)
 
     
-    def save(self,filename):
-
-        data={  "structure":self.struct,
-                "weights":[w.tolist() for w in self.weights],
-                "bias":[b.tolist() for b in self.bias]
-            }
-        f=open(filename,"w")
-        json.dump(data,f)
-        f.close()
-
-def load(filename):
-    f=open(filename,"r")
-    data=json.load(f)
-    f.close()
-    net=network(data["structure"])
-    net.weights=[np.array(w) for w in data["weights"]]
-    net.bias=[np.array(b) for b in data["bias"]]
-    return net
+    

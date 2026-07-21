@@ -9,6 +9,7 @@ export function NumberInput({ id, defaultValue, min, max, step }) {
             step={step}
             inputMode="decimal"
             className="form-control number-input mt-1 w-full"
+            required
         />
     );
 }
@@ -21,13 +22,14 @@ export function TextInput({ id, defaultValue, placeholder }) {
             defaultValue={defaultValue}
             placeholder={placeholder}
             className="form-control mt-1 w-full"
+            required
         />
     );
 }
 
 export function SelectInput({ id, children, defaultValue }) {
     return (
-        <select id={id} defaultValue={defaultValue} className="form-control form-select mt-1 w-full">
+        <select id={id} defaultValue={defaultValue} className="form-control form-select mt-1 w-full" required>
             {children}
         </select>
     );

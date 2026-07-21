@@ -2,7 +2,6 @@
 import numpy as np
 
 def load_kaggle_mnist(csv_path):
-    # Kaggle MNIST: first column = label, next 784 columns = pixels
     data = np.loadtxt(csv_path, delimiter=",", skiprows=1)
 
     labels = data[:, 0].astype(int)      # shape: (N,)

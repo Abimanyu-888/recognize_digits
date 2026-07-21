@@ -1,7 +1,40 @@
+import { useState } from 'react';
 import Model_info from './Model_info/Model_info';
 import Result from './Result/Result';
 
 function Workspace({ panels, onRemovePanel }) {
+    const [runStates, setRunStates] = useState({});
+
+    const trainModel = async (panelId, modelType, parameters) => {
+        setRunStates((current) => ({
+            ...current,
+            [panelId]: { loading: true, result: null, error: null },
+        }));
+
+        try {
+            const response = await fetch(`/api/results/${modelType}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(parameters),
+            });
+            const body = await response.json();
+
+            if (!response.ok) {
+                throw new Error(typeof body.detail === 'string' ? body.detail : 'Training could not be completed.');
+            }
+
+            setRunStates((current) => ({
+                ...current,
+                [panelId]: { loading: false, result: body, error: null },
+            }));
+        } catch (error) {
+            setRunStates((current) => ({
+                ...current,
+                [panelId]: { loading: false, result: null, error: error.message || 'Unable to reach the API.' },
+            }));
+        }
+    };
+
     return (
         <main className="flex-grow bg-gray-950 relative">
             <div className={`grid-container grid-${panels.length}`}>
@@ -22,8 +55,12 @@ function Workspace({ panels, onRemovePanel }) {
                             )}
                         </div>
                         <div className="panel-body">
-                            <Model_info panelId={id} />
-                            <Result />
+                            <Model_info
+                                panelId={id}
+                                onTrain={(modelType, parameters) => trainModel(id, modelType, parameters)}
+                                isTraining={runStates[id]?.loading || false}
+                            />
+                            <Result {...(runStates[id] || {})} />
                         </div>
                     </div>
                 ))}
