@@ -46,6 +46,9 @@ def test_data():
 @app.get("/")
 def read_root():
     return {"message": "All fine running API"}
+@app.post("/test")
+def test():
+    return {"ok": True}
 
 
 @app.post("/api/results/basic")
